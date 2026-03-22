@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Mcp\Tools\ListActions;
 use Laravel\Boost\Mcp\Tools\BrowserLogs;
 
 return [
@@ -57,5 +58,6 @@ return [
         "tools" => [
             "exclude" => [BrowserLogs::class],
         ],
+        "include" => [ListActions::class],
     ],
 ];
