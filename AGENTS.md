@@ -151,6 +151,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 
 This project has domain-specific skills available. You MUST activate the relevant skill whenever you work in that domain—don't wait until you're stuck.
 
+- `notification-service` — Trabajar con el sistema de notificaciones de la aplicación. Usar cuando se trabaje con emails, notificaciones push, o comunicaciones al usuario.
 - `web-design-guidelines` — Review UI code for Web Interface Guidelines compliance. Use when asked to "review my UI", "check accessibility", "audit design", "review UX", or "check my site against best practices".
 
 ## Conventions
