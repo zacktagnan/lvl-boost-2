@@ -326,10 +326,22 @@ protected function isAccessible(User $user, ?string $path = null): bool
 
 === pint/core rules ===
 
-# Laravel Pint Code Formatter
+# Pint
 
-- If you have modified any PHP files, you must run `vendor/bin/sail bin pint --dirty --format agent` before finalizing changes to ensure your code matches the project's expected style.
-- Do not run `vendor/bin/sail bin pint --test --format agent`, simply run `vendor/bin/sail bin pint --format agent` to fix any formatting issues.
+## Reglas de formato
+
+- Usar preset `laravel`
+- Siempre trailing commas en arrays multilinea
+- Nunca espacios dentro de paréntesis
+- Imports ordenados alfabéticamente y agrupados
+
+## Ejecutar Pint
+
+Siempre ejecutar antes de commit:
+
+```bash
+./vendor/bin/pint
+```
 
 === phpunit/core rules ===
 
