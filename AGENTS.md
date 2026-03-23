@@ -1,4 +1,132 @@
 <laravel-boost-guidelines>
+=== .ai/architecture rules ===
+
+# Arquitectura
+
+## Patrón Action
+
+Toda la lógica de negocio en Actions, nunca en controladores.
+
+Ubicación: `app/Actions/`
+
+Reglas:
+- Método público 'execute()'
+- Recibe DTO tipado
+- Retorna resultado de la operación
+
+✅ Correcto:
+
+```php
+<?php
+
+class CreateOrderAction
+{
+    public function execute(CreateOrderActionData $data): Order
+    {
+        // Lógica aquí
+    }
+}
+```
+
+❌ Incorrecto:
+
+```php
+<?php
+
+// Lógica de negocio en el controlador
+public function store(Request $request)
+{
+    $order = Order::create($request->all());
+    Mail::send(...);
+    // ...
+}
+```
+
+## DTOs
+
+Ubicación: `app/DataTransferObjects/`
+
+Reglas:
+- Clases readonly
+- Propiedades tipadas
+- Método `toDto()` en FormRequest para crear el DTO desde la request
+
+## Controladores
+
+Solo:
+1. Validar con FormRequest
+2. Llamar Action con `$request->toDto()`
+3. Retornar response
+
+=== .ai/forbidden rules ===
+
+# Restricciones de Seguridad
+
+## Archivos prohibidos
+
+Nunca leer, modificar ni referenciar el archivo `.env`.
+
+Usa `.env.example` o `.env.testing` como referencia para variables de entorno.
+
+## Operaciones prohibidas
+
+- Nunca ejecutar migraciones destructivas sin confirmación (drop table, drop column)
+- Nunca modificar archivos de configuración del framework directamente, proponer cambios en `.env.example`
+- Nunca eliminar tests existentes
+
+=== .ai/testing rules ===
+
+# Testing
+
+## Framework
+
+Siempre Pest, nunca PHPUnit.
+
+## Naming
+
+Usa `it()` con descripción clara en inglés:
+
+✅ Correcto:
+
+```php
+<?php
+
+it('creates an order for a user', function () {
+    // ...
+});
+```
+
+❌ Incorrecto:
+
+```php
+<?php
+
+test('test order creation', function () {
+    // ...
+});
+```
+
+## Estructura del test
+
+Siempre Arrange-Act-Assert:
+
+```php
+<?php
+
+// Arrange
+$user = User::factory()->create();
+
+// Act
+$response = postJson('/api/orders', $data);
+
+// Assert
+$response->assertCreated();
+```
+
+## Factories
+
+Usa factories para crear datos de prueba. Nunca datos hardcodeados en el test.
+
 === foundation rules ===
 
 # Laravel Boost Guidelines
