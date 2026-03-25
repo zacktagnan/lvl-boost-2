@@ -1,7 +1,13 @@
 <?php
 
+namespace Tests\Feature\Notifications;
+
 use App\Models\User;
 use App\Notifications\WelcomeNotification;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+uses(RefreshDatabase::class);
 
 it('creates a welcome notification with user data', function () {
     $user = User::factory()->create(['name' => 'Juan']);

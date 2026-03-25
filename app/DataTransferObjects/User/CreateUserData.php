@@ -8,6 +8,5 @@ readonly class CreateUserData
         public string $name,
         public string $email,
         public string $password,
-    ) {
-    }
+    ) {}
 }
