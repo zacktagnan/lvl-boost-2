@@ -1,58 +1,128 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# Setup Inicial de Proyecto Laravel con Herramientas de Calidad y Laravel Boost
 
-## About Laravel
+> Configuración completa de Laravel para desarrollo con calidad y contexto para IA
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Descripción
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Crear un proyecto de Laravel no es solo ejecutar un comando para tener todas las carpetas disponibles. Es recomendable establecer un **STACK inicial** que, a lo largo del desarrollo del proyecto, facilite toda su implementación y la seguridad del mismo.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Por qué un SETUP previo
 
-## Learning Laravel
+| Sin SETUP | Con SETUP |
+|-----------|-----------|
+| N+1 queries en producción | Eloquent con "strict mode" captura errores |
+| dd() olvidados en el código | Rector moderniza el código automáticamente |
+| Atributos mal escritos sin error | PHPStan nivel 7 valida tipos |
+| env() dispersos por toda la APP | Los Arch tests protegen la arquitectura |
+| Sin tests, sin arquitectura | Pint formatea el código sin pensar |
+| La IA genera código sin contexto | Laravel Boost da contexto real a la IA |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Stack Tecnológico
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Tecnología | Versión | Propósito |
+|------------|---------|-----------|
+| PHP | 8.5.3 | Lenguaje base |
+| Laravel | 13 (compatible con 12) | Framework |
+| Laravel Boost | 2.3 | Servidor MCP para IA |
+| Pest | 4.4 | Testing framework |
+| Laravel Sail | 1.54 | Contenedores Docker |
+| Laravel Pint | 1.27 | Formateador de código |
+| Rector | 2.3 | Refactorización automática |
+| PHPStan | 3.9 | Análisis estático (nivel 7) |
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Flujo de Configuración
 
-## Agentic Development
+El proyecto se configura en este orden:
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+1. Crear proyecto con Laravel Sail
+2. Archivo .env con contenido mínimo + Eloquent strict
+3. Herramientas de calidad (Rector + Pint + PHPStan nivel 7)
+4. Pest, con tests de arquitectura (Arch tests)
+5. Laravel Boost + Guidelines + Skills
+
+## Arquitectura
+
+El proyecto sigue el patrón Action:
+
+- **Actions** (`app/Actions/`): Lógica de negocio en clases con método `execute()`
+- **DTOs** (`app/DataTransferObjects/`): Objetos tipados para transferencia de datos
+- **Form Requests**: Solo validan los datos
+- **Controladores**: Son finales y nunca contienen lógica de negocio
+
+El flujo siempre será: Request → FormRequest valida → toDto() → Controller pasa DTO a Action → Action ejecuta.
+
+## Guidelines Configuradas
+
+El proyecto tiene configuradas las siguientes guidelines:
+
+- `.ai/architecture` - Patrón Action y estructura de código
+- `.ai/forbidden` - Restricciones de seguridad (prohibido leer .env, etc.)
+- `.ai/testing` - Testing con Pest
+- `php` - Convenciones PHP (tipos, constructores, PHPDoc)
+- `laravel/core` - Convenciones Laravel (Eloquent, colas)
+- `laravel/v13` - Especificaciones Laravel 13
+- `pint/core` - Formato de código
+- `pest/core` - Testing
+
+## Skills Disponibles
+
+Las siguientes skills se activan automáticamente según el contexto:
+
+- `pest-testing` - Testing con Pest 4
+- `notification-service` - Sistema de notificaciones
+- `web-design-guidelines` - Guidelines de UI
+- `conventional-commits` - Conventional Commits para commits
+
+## Configuración del Entorno de Testing
+
+El proyecto utiliza Pest en lugar de PHPUnit:
+
+- Tests en `tests/Feature/` y `tests/Unit/`
+- Tests de Arquitectura en `tests/Architecture/ArchTest.php`
+- Presets de Laravel para protección de arquitectura
+
+## Comandos Esenciales
 
 ```bash
-composer require laravel/boost --dev
+# Regenerar guidelines después de cambios
+vendor/bin/sail artisan boost:install
 
-php artisan boost:install
+# Ejecutar tests
+vendor/bin/sail artisan test
+# o
+vendor/bin/sail test
+
+# Ejecutar cada herramienta individualmente
+vendor/bin/sail composer pint
+vendor/bin/sail composer rector
+vendor/bin/sail composer phpstan
+
+# Ejecutar todas las herramientas de calidad
+vendor/bin/sail composer quality
+
+# Ejecutar todas las herramientas de calidad y los tests
+vendor/bin/sail composer test
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## Recursos
 
-## Contributing
+- [Laravel Boost Documentation](https://laravel.com/docs/boost)
+- [Laravel Pint Documentation](https://laravel.com/docs/pint)
+- [Rector PHP](https://getrector.com/)
+- [PHPStan](https://phpstan.org/)
+- [Pest Framework](https://pestphp.com/)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Flujo de Trabajo
 
-## Code of Conduct
+1. Desarrollar una tarea
+2. Ejecutar herramientas de calidad
+3. Ejecutar tests
+4. Si todo es correcto, hacer commit y subir al repositorio (respetando la especificación de las [Conventional Commits](https://www.conventionalcommits.org))
+5. Repetir el ciclo hasta terminar con todas las posibles tareas
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## Licencia
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT
