@@ -3,15 +3,15 @@
 
 # Arquitectura
 
-## Patrón Action
+## Actions
 
-Toda la lógica de negocio en Actions, nunca en controladores.
+Toda la lógica de negocio en Actions invocables, nunca en controladores.
 
 Ubicación: `app/Actions/`
 
 Reglas:
-- Método público 'execute()'
-- Recibe DTO tipado
+- Clase final con método público '__invoke()'
+- Recibe DTO tipado como argumento
 - Retorna resultado de la operación
 
 ✅ Correcto:
@@ -19,9 +19,9 @@ Reglas:
 ```php
 <?php
 
-class CreateOrderAction
+final class CreateOrderAction
 {
-    public function execute(CreateOrderActionData $data): Order
+    public function __invoke(CreateOrderActionData $data): Order
     {
         // Lógica aquí
     }
@@ -48,30 +48,40 @@ Ubicación: `app/DataTransferObjects/`
 
 Reglas:
 - Clases readonly
-- Propiedades tipadas
-- Método `toDto()` en FormRequest para crear el DTO desde la request
+- Solo propiedades tipadas
+
+## Form Requests
+
+Reglas:
+- Cada FormRequest incluye un método `toDto()` que construye y devuelve el DTO correspondiente desde la request
 
 ## Controladores
 
-Solo:
-1. Validar con FormRequest
-2. Llamar Action con `$request->toDto()`
-3. Retornar response
+Los controladores son finales y nunca contienen lógica de negocio.
+- Invocables (`__invoke()`) para acciones específicas que no son CRUD
+- Resource (index, store, show, update, destroy) para CRUD
+
+El flujo siempre es: Request → FormRequest valida → toDto() → Controller pasa DTO a Action → Action ejecuta.
 
 === .ai/forbidden rules ===
 
-# Restricciones de Seguridad
+# Prohibiciones y Restricciones de Seguridad
 
-## Archivos prohibidos
+## Seguridad crítica
 
-Nunca leer, modificar ni referenciar el archivo `.env`.
+- NUNCA leer, mostrar ni acceder al archivo `.env` (usar `.env.example` o `.env.testing` como referencia para variables de entorno).
+- NUNCA ejecutar comandos git de escritura (commit, push, merge, rebase, reset)
+- NUNCA ejecutar migraciones destructivas sin aprobación explícita (drop table, drop column)
+- NUNCA exponer credenciales, tokens ni secrets en código o logs
 
-Usa `.env.example` o `.env.testing` como referencia para variables de entorno.
+## Operaciones prohibidas sobre el Código
 
-## Operaciones prohibidas
-
-- Nunca ejecutar migraciones destructivas sin confirmación (drop table, drop column)
-- Nunca modificar archivos de configuración del framework directamente, proponer cambios en `.env.example`
+- No instalar paquetes sin mi aprobación explícita
+- No usar dd(), dump(), var_dump() ni ray()
+- No usar env() fuera de archivos de config
+- No modificar archivos de configuración del framework directamente sin justificación, proponer cambios en `.env.example`
+- No usar query raw SQL sin justificación
+- No usar Facades cuando se puede inyectar
 - Nunca eliminar tests existentes
 
 === .ai/testing rules ===
@@ -80,7 +90,7 @@ Usa `.env.example` o `.env.testing` como referencia para variables de entorno.
 
 ## Framework
 
-Siempre Pest, nunca PHPUnit.
+Siempre Pest PHP, nunca PHPUnit.
 
 ## Naming
 
@@ -108,6 +118,10 @@ test('test order creation', function () {
 
 ## Estructura del test
 
+- tests/Architecture/ → Arch tests
+- tests/Feature/{Dominio}/ → Tests de flujo completo
+- tests/Unit/Actions/ → Tests de Actions aisladas
+
 Siempre Arrange-Act-Assert:
 
 ```php
@@ -123,9 +137,12 @@ $response = postJson('/api/orders', $data);
 $response->assertCreated();
 ```
 
-## Factories
+## Convenciones
 
-Usa factories para crear datos de prueba. Nunca datos hardcodeados en el test.
+- Un test, una aserción (o aserciones relacionadas)
+- Usar factories para datos de prueba. Nunca datos hardcodeados en el test.
+- Arch tests en tests/Architecture/ArchTest.php
+- Si se establece un archivo de test para la clase `app\Notifications\WelcomeNotification.php`, el archivo de test correspondiente, sea de tipo Feature o Unit, deberá respetar la misma estrutura de carpetas, es decir, `tests\Feature\Notifications\WelcomeNotificationTest.php` o  `tests\Unit\Notifications\WelcomeNotificationTest.php`
 
 === foundation rules ===
 
@@ -140,6 +157,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - php - 8.5
 - laravel/framework (LARAVEL) - v13
 - laravel/prompts (PROMPTS) - v0
+- larastan/larastan (LARASTAN) - v3
 - laravel/boost (BOOST) - v2
 - laravel/mcp (MCP) - v0
 - laravel/pail (PAIL) - v1
@@ -147,12 +165,14 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - laravel/sail (SAIL) - v1
 - pestphp/pest (PEST) - v4
 - phpunit/phpunit (PHPUNIT) - v12
+- rector/rector (RECTOR) - v2
 
 ## Skills Activation
 
 This project has domain-specific skills available. You MUST activate the relevant skill whenever you work in that domain—don't wait until you're stuck.
 
 - `pest-testing` — Use this skill for Pest PHP testing in Laravel projects only. Trigger whenever any test is being written, edited, fixed, or refactored — including fixing tests that broke after a code change, adding assertions, converting PHPUnit to Pest, adding datasets, and TDD workflows. Always activate when the user asks how to write something in Pest, mentions test files or directories (tests/Feature, tests/Unit, tests/Browser), or needs browser testing, smoke testing multiple pages for JS errors, or architecture tests. Covers: it()/expect() syntax, datasets, mocking, browser testing (visit/click/fill), smoke testing, arch(), Livewire component tests, RefreshDatabase, and all Pest 4 features. Do not use for factories, seeders, migrations, controllers, models, or non-test PHP code.
+- `conventional-commits` — Generar mensajes de commit siguiendo Conventional Commits. Usar cuando el usuario pida un mensaje de commit, commit message o similar.
 - `notification-service` — Trabajar con el sistema de notificaciones de la aplicación. Usar cuando se trabaje con emails, notificaciones push, o comunicaciones al usuario.
 - `web-design-guidelines` — Review UI code for Web Interface Guidelines compliance. Use when asked to "review my UI", "check accessibility", "audit design", "review UX", or "check my site against best practices".
 
@@ -342,7 +362,7 @@ protected function isAccessible(User $user, ?string $path = null): bool
 
 === pint/core rules ===
 
-# Pint
+# Laravel Pint Code Formatter
 
 ## Reglas de formato
 
@@ -353,11 +373,7 @@ protected function isAccessible(User $user, ?string $path = null): bool
 
 ## Ejecutar Pint
 
-Siempre ejecutar antes de commit:
-
-```bash
-./vendor/bin/pint
-```
+- No ejecutar `pint` directamente. Usar `./vendor/bin/sail composer quality` que ejecuta Rector + Pint + PHPStan en el orden correcto.
 
 === pest/core rules ===
 

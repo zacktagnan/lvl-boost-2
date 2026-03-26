@@ -1,13 +1,17 @@
-# Restricciones de Seguridad
+# Prohibiciones y Restricciones de Seguridad
 
-## Archivos prohibidos
+## Seguridad crítica
+- NUNCA leer, mostrar ni acceder al archivo `.env` (usar `.env.example` o `.env.testing` como referencia para variables de entorno).
+- NUNCA ejecutar comandos git de escritura (commit, push, merge, rebase, reset)
+- NUNCA ejecutar migraciones destructivas sin aprobación explícita (drop table, drop column)
+- NUNCA exponer credenciales, tokens ni secrets en código o logs
 
-Nunca leer, modificar ni referenciar el archivo `.env`.
+## Operaciones prohibidas sobre el Código
 
-Usa `.env.example` o `.env.testing` como referencia para variables de entorno.
-
-## Operaciones prohibidas
-
-- Nunca ejecutar migraciones destructivas sin confirmación (drop table, drop column)
-- Nunca modificar archivos de configuración del framework directamente, proponer cambios en `.env.example`
+- No instalar paquetes sin mi aprobación explícita
+- No usar dd(), dump(), var_dump() ni ray()
+- No usar env() fuera de archivos de config
+- No modificar archivos de configuración del framework directamente sin justificación, proponer cambios en `.env.example`
+- No usar query raw SQL sin justificación
+- No usar Facades cuando se puede inyectar
 - Nunca eliminar tests existentes

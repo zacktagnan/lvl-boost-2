@@ -1,4 +1,4 @@
-# Pint
+# Laravel Pint Code Formatter
 
 ## Reglas de formato
 
@@ -9,8 +9,4 @@
 
 ## Ejecutar Pint
 
-Siempre ejecutar antes de commit:
-
-```bash
-./vendor/bin/pint
-```
+- No ejecutar `pint` directamente. Usar `./vendor/bin/sail composer quality` que ejecuta Rector + Pint + PHPStan en el orden correcto.

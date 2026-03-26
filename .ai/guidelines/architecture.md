@@ -1,14 +1,14 @@
 # Arquitectura
 
-## Patrón Action
+## Actions
 
-Toda la lógica de negocio en Actions, nunca en controladores.
+Toda la lógica de negocio en Actions invocables, nunca en controladores.
 
 Ubicación: `app/Actions/`
 
 Reglas:
-- Método público 'execute()'
-- Recibe DTO tipado
+- Clase final con método público '__invoke()'
+- Recibe DTO tipado como argumento
 - Retorna resultado de la operación
 
 ✅ Correcto:
@@ -16,9 +16,9 @@ Reglas:
 ```php
 <?php
 
-class CreateOrderAction
+final class CreateOrderAction
 {
-    public function execute(CreateOrderActionData $data): Order
+    public function __invoke(CreateOrderActionData $data): Order
     {
         // Lógica aquí
     }
@@ -46,12 +46,17 @@ Ubicación: `app/DataTransferObjects/`
 
 Reglas:
 - Clases readonly
-- Propiedades tipadas
-- Método `toDto()` en FormRequest para crear el DTO desde la request
+- Solo propiedades tipadas
+
+## Form Requests
+
+Reglas:
+- Cada FormRequest incluye un método `toDto()` que construye y devuelve el DTO correspondiente desde la request
 
 ## Controladores
 
-Solo:
-1. Validar con FormRequest
-2. Llamar Action con `$request->toDto()`
-3. Retornar response
+Los controladores son finales y nunca contienen lógica de negocio.
+- Invocables (`__invoke()`) para acciones específicas que no son CRUD
+- Resource (index, store, show, update, destroy) para CRUD
+
+El flujo siempre es: Request → FormRequest valida → toDto() → Controller pasa DTO a Action → Action ejecuta.

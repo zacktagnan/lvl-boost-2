@@ -9,6 +9,7 @@
     "sail": true,
     "skills": [
         "pest-testing",
+        "conventional-commits",
         "notification-service",
         "web-design-guidelines"
     ]

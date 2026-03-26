@@ -2,7 +2,7 @@
 
 ## Framework
 
-Siempre Pest, nunca PHPUnit.
+Siempre Pest PHP, nunca PHPUnit.
 
 ## Naming
 
@@ -30,6 +30,10 @@ test('test order creation', function () {
 
 ## Estructura del test
 
+- tests/Architecture/ → Arch tests
+- tests/Feature/{Dominio}/ → Tests de flujo completo
+- tests/Unit/Actions/ → Tests de Actions aisladas
+
 Siempre Arrange-Act-Assert:
 
 ```php
@@ -45,6 +49,8 @@ $response = postJson('/api/orders', $data);
 $response->assertCreated();
 ```
 
-## Factories
-
-Usa factories para crear datos de prueba. Nunca datos hardcodeados en el test.
+## Convenciones
+- Un test, una aserción (o aserciones relacionadas)
+- Usar factories para datos de prueba. Nunca datos hardcodeados en el test.
+- Arch tests en tests/Architecture/ArchTest.php
+- Si se establece un archivo de test para la clase `app\Notifications\WelcomeNotification.php`, el archivo de test correspondiente, sea de tipo Feature o Unit, deberá respetar la misma estrutura de carpetas, es decir, `tests\Feature\Notifications\WelcomeNotificationTest.php` o  `tests\Unit\Notifications\WelcomeNotificationTest.php`
