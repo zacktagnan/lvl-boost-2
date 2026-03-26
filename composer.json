@@ -52,9 +52,18 @@
             "Composer\\Config::disableProcessTimeout",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1 --timeout=0\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite --kill-others"
         ],
+        "pint": "./vendor/bin/pint --dirty",
+        "rector": "./vendor/bin/rector process",
+        "rector-dry": "./vendor/bin/rector process --dry-run",
+        "phpstan": "./vendor/bin/phpstan analyse --ansi",
+        "quality": [
+            "@rector",
+            "@pint",
+            "@phpstan"
+        ],
         "test": [
-            "@php artisan config:clear --ansi",
-            "@php artisan test"
+            "@quality",
+            "./vendor/bin/pest --compact"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
