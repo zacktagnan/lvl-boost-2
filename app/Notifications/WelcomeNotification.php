@@ -12,19 +12,20 @@ class WelcomeNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(public User $user)
-    {
-    }
+    public function __construct(public User $user) {}
 
+    /**
+     * @return array<int, string>
+     */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ["mail"];
     }
 
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage())
-            ->subject('¡Bienvenido a '.config('app.name').'!')
-            ->markdown('emails.welcome', ['user' => $this->user]);
+        return new MailMessage()
+            ->subject("¡Bienvenido a " . config("app.name") . "!")
+            ->markdown("emails.welcome", ["user" => $this->user]);
     }
 }

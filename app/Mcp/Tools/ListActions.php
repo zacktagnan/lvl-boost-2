@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Mcp\Tools;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -8,8 +10,9 @@ use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Tool;
+use Override;
 
-#[Description("List all Action classes in app/Actions.")]
+#[Description('List all Action classes in app/Actions.')]
 class ListActions extends Tool
 {
     /**
@@ -17,28 +20,28 @@ class ListActions extends Tool
      */
     public function handle(Request $request): Response
     {
-        $path = app_path("Actions");
+        $path = app_path('Actions');
 
         if (!is_dir($path)) {
-            return Response::text("No Actions directory found.");
+            return Response::text('No Actions directory found.');
         }
 
         $files = File::allFiles($path);
         $actions = collect($files)
-            ->filter(fn($file) => $file->getExtension() === "php")
+            ->filter(fn ($file) => $file->getExtension() === 'php')
             ->map(
-                fn($file) => str_replace(
-                    "/",
-                    "\\",
+                fn ($file) => str_replace(
+                    '/',
+                    '\\',
                     $file->getRelativePathname(),
                 ),
             )
-            ->map(fn($file) => str_replace(".php", "", $file))
+            ->map(fn ($file) => str_replace('.php', '', $file))
             ->values()
-            ->toArray();
+            ->all();
 
         if (empty($actions)) {
-            return Response::text("No Action classes found");
+            return Response::text('No Action classes found');
         }
 
         return Response::text(implode("\n", $actions));
@@ -47,8 +50,9 @@ class ListActions extends Tool
     /**
      * Get the tool's input schema.
      *
-     * @return array<string, \Illuminate\Contracts\JsonSchema\JsonSchema>
+     * @return array<string, JsonSchema>
      */
+    #[Override]
     public function schema(JsonSchema $schema): array
     {
         return [];

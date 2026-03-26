@@ -9,3 +9,4 @@ parameters:
     ignoreErrors:
 
     excludePaths:
+    # phpVersion: 80500  # 8.5.0
